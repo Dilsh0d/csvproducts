@@ -1,25 +1,22 @@
 package com.csv.products;
 
-import com.csv.products.dto.Product;
 import com.csv.products.exception.DirectoryPathNotFolderException;
 import com.csv.products.exception.DirectoryPathNotFoundException;
 import com.csv.products.exception.JavaArgNotFountDirectoryPathException;
-import com.csv.products.task.Cheapest1000ProductsTask;
+import com.csv.products.model.FindCheapestProductModel;
+import com.csv.products.task.ReadProductCsvFileTask;
 
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * @author dilsh0d
+ */
 public class Main {
 
     public static String COMMA_DELIMITER = ";";
-
-    public static List<Product> cheapestProductList = Collections.synchronizedList(new ArrayList<>());
-    public static ConcurrentHashMap<Integer,List<Product>> productByIdListMap = new ConcurrentHashMap<>();
-
 
 
     public static void main(String[] args) {
@@ -50,7 +47,7 @@ public class Main {
         CountDownLatch downLatch = new CountDownLatch(fileNames.length);
         ExecutorService executorService = Executors.newFixedThreadPool(8);
         for(String csvFile:directory.list()) {
-            executorService.execute(new Cheapest1000ProductsTask(directory.getAbsolutePath()+File.separator+csvFile, downLatch));
+            executorService.execute(new ReadProductCsvFileTask(directory.getAbsolutePath()+File.separator+csvFile, downLatch));
         }
         try {
             downLatch.await();
@@ -58,6 +55,6 @@ public class Main {
             e.printStackTrace();
         }
         executorService.shutdown();
-        System.out.println(cheapestProductList);
+        System.out.println(FindCheapestProductModel.cheapestProductList);
     }
 }

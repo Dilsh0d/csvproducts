@@ -8,9 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author: Dilsh0d Tadjiev on 16.07.2019 11:15.
- * @project: Electron-Ticket
- * @version: 2.0
+ * @author dilsh0d
  */
 public class CreateCsvFile {
     private static final char DEFAULT_SEPARATOR = ';';
