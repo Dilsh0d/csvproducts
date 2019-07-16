@@ -7,6 +7,9 @@ import com.csv.products.model.FindCheapestProductModel;
 import com.csv.products.task.ReadProductCsvFileTask;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,6 +43,7 @@ public class Main {
 
         Main cheapestProduct = new Main();
         cheapestProduct.execute(directory);
+        cheapestProduct.writeCheapestProduct(directory);
     }
 
     private void execute(File directory) {
@@ -55,6 +59,23 @@ public class Main {
             e.printStackTrace();
         }
         executorService.shutdown();
-        System.out.println(FindCheapestProductModel.cheapestProductList);
+    }
+
+    private void writeCheapestProduct(File directory){
+        try {
+            FileWriter writer = new FileWriter(directory.getAbsolutePath()+File.separator+ "cheapest1000products.csv");
+            FindCheapestProductModel.cheapestProductList.forEach(product -> {
+                try {
+                    CreateCsvFile.writeLine(writer,
+                            Arrays.asList(String.valueOf(product.getId()), product.getName(), product.getCondition(), product.getState(), String.valueOf(product.getPrice())));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
