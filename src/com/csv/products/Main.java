@@ -50,6 +50,10 @@ public class Main {
         String[] fileNames =  directory.list();
         CountDownLatch downLatch = new CountDownLatch(fileNames.length);
         ExecutorService executorService = Executors.newFixedThreadPool(8);
+
+        long beginTimsMls = System.currentTimeMillis();
+        System.out.println("Begin process read CSV files from directory ");
+
         for(String csvFile:directory.list()) {
             executorService.execute(new ReadProductCsvFileTask(directory.getAbsolutePath()+File.separator+csvFile, downLatch));
         }
@@ -59,6 +63,12 @@ public class Main {
             e.printStackTrace();
         }
         executorService.shutdown();
+        long endTimsMls = System.currentTimeMillis();
+
+        System.out.println("End process read CSV files from directory.");
+        long inSeconds = (endTimsMls-beginTimsMls)/1000;
+        System.out.println("Done file count: " + String.valueOf(fileNames.length));
+        System.out.println("Code execution time in seconds: " + String.valueOf(inSeconds));
     }
 
     private void writeCheapestProduct(File directory){

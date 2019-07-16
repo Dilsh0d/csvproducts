@@ -77,6 +77,9 @@ public class FindCheapestProductModel {
     private static  void removeProductAndAdd(Product lastProduct, Product product) {
         cheapestProductList.remove(lastProduct);
         productByIdListMap.get(lastProduct.getId()).remove(lastProduct);
+        if(productByIdListMap.get(lastProduct.getId()).size() == 0) {
+            productByIdListMap.remove(lastProduct.getId());
+        }
         addNewCheapestProduct(product);
     }
 
@@ -87,6 +90,9 @@ public class FindCheapestProductModel {
         if (lastProduct.getPrice() > product.getPrice()) {
             cheapestProductList.remove(lastProduct);
             productByIdListMap.get(lastProduct.getId()).remove(lastProduct);
+            if(productByIdListMap.get(lastProduct.getId()).size() == 0) {
+                productByIdListMap.remove(lastProduct.getId());
+            }
             addNewCheapestProduct(product);
         }
     }

@@ -28,10 +28,14 @@ public class ReadProductCsvFileTask implements Runnable {
         File f = new File(filePath);
         try (BufferedReader b = new BufferedReader(new FileReader(f))) {
             String readLine = "";
+            long biginTime = System.currentTimeMillis();
             while ((readLine = b.readLine()) != null) {
                 String[] values = readLine.split(COMMA_DELIMITER);
                 FindCheapestProductModel.isCheapestProductAndAddStack(values);
             }
+            long endTime = System.currentTimeMillis();
+            long inSeconds = (endTime-biginTime)/1000;
+            System.out.println("Done file name: \"" + filePath + "\" code execution time in secunds: " + String.valueOf(inSeconds)+" seconds");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {
