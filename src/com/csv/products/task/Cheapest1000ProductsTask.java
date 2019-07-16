@@ -37,17 +37,19 @@ public class Cheapest1000ProductsTask implements Runnable {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            downLatch.countDown();
         }
-        downLatch.countDown();
     }
 
-    private void addCheapestProductStack(String[] values) {
+    private synchronized void addCheapestProductStack(String[] values) {
         Product newProduct = new Product.Builder(values[0])
                 .name(values[1])
                 .condition(values[2])
                 .state(values[3])
                 .price(values[4])
                 .build();
+
 
         if (newProduct.getId() != null && newProduct.getPrice() != null) {
             if (isEmptyProductList()) {
@@ -69,7 +71,7 @@ public class Cheapest1000ProductsTask implements Runnable {
         }
     }
 
-    private void addNewCheapestProduct(Product product) {
+    private synchronized void addNewCheapestProduct(Product product) {
         addProductByIdListMap(product);
         Main.cheapestProductList.add(product);
         Main.cheapestProductList.sort((o1, o2) -> {
@@ -83,7 +85,7 @@ public class Cheapest1000ProductsTask implements Runnable {
         });
     }
 
-    private void addProductByIdListMap(Product product) {
+    private synchronized void addProductByIdListMap(Product product) {
         if (!Main.productByIdListMap.containsKey(product.getId())) {
             List<Product> sameProducts = Collections.synchronizedList(new ArrayList<>());
             Main.productByIdListMap.put(product.getId(), sameProducts);
@@ -102,13 +104,13 @@ public class Cheapest1000ProductsTask implements Runnable {
         }
     }
 
-    private void removeProductAndAdd(Product lastProduct, Product product) {
+    private synchronized void removeProductAndAdd(Product lastProduct, Product product) {
         Main.cheapestProductList.remove(lastProduct);
         Main.productByIdListMap.get(lastProduct.getId()).remove(lastProduct);
         addNewCheapestProduct(product);
     }
 
-    private void removeMoreThanPriceProductFromSame20ItemsAndReplace(Product product) {
+    private synchronized void removeMoreThanPriceProductFromSame20ItemsAndReplace(Product product) {
         Product lastProduct = Main.productByIdListMap.get(product.getId())
                 .get(Main.productByIdListMap.get(product.getId()).size() - 1);
 
@@ -119,11 +121,11 @@ public class Cheapest1000ProductsTask implements Runnable {
         }
     }
 
-    private Product getLastProductChepestList() {
+    private synchronized Product getLastProductChepestList() {
         return Main.cheapestProductList.get(Main.cheapestProductList.size()-1);
     }
 
-    private boolean isLessThanPriceProductFromList(Product product) {
+    private synchronized boolean isLessThanPriceProductFromList(Product product) {
         Product lastProduct = Main.cheapestProductList.get(Main.cheapestProductList.size()-1);
         if (lastProduct.getPrice() > product.getPrice()) {
             return true;
@@ -131,15 +133,15 @@ public class Cheapest1000ProductsTask implements Runnable {
         return false;
     }
 
-    private boolean isEmptyProductList() {
+    private synchronized boolean isEmptyProductList() {
         return Main.cheapestProductList.isEmpty();
     }
 
-    private boolean isLessThanProductList1000() {
+    private synchronized boolean isLessThanProductList1000() {
         return Main.cheapestProductList.size() < 1000;
     }
 
-    private boolean isLessThanPriceProductFromSame20Items(Product product) {
+    private synchronized boolean isLessThanPriceProductFromSame20Items(Product product) {
         Product lastProduct = Main.productByIdListMap.get(product.getId())
                 .get(Main.productByIdListMap.get(product.getId()).size() - 1);
 
@@ -150,14 +152,14 @@ public class Cheapest1000ProductsTask implements Runnable {
     }
 
 
-    private boolean isLessThan20Items(Integer id) {
+    private synchronized boolean isLessThan20Items(Integer id) {
         if (Main.productByIdListMap.containsKey(id)) {
             return Main.productByIdListMap.size() < 20;
         }
         return true;
     }
 
-    private boolean isEquals20Items(Integer id) {
+    private synchronized boolean isEquals20Items(Integer id) {
         if (Main.productByIdListMap.containsKey(id)) {
             return Main.productByIdListMap.size()==20;
         }

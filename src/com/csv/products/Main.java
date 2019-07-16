@@ -15,16 +15,14 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    public static final String COMMA_DELIMITER = ";";
+    public static String COMMA_DELIMITER = ";";
 
-    public static List<Product> cheapestProductList = Collections.synchronizedList(new ArrayList<>(1000));
+    public static List<Product> cheapestProductList = Collections.synchronizedList(new ArrayList<>());
     public static ConcurrentHashMap<Integer,List<Product>> productByIdListMap = new ConcurrentHashMap<>();
 
 
 
     public static void main(String[] args) {
-
-
         if(args == null || args.length==0) {
             throw new JavaArgNotFountDirectoryPathException("Please enter in arg directory path where csv files place!");
         }
@@ -37,6 +35,10 @@ public class Main {
 
         if(!directory.isDirectory()){
             throw new DirectoryPathNotFolderException("Please check your enter path is directory!");
+        }
+
+        if(args.length>1) {
+            COMMA_DELIMITER = args[1];// COMMA_DELIMITER for example ("," or ";" or ":")
         }
 
         Main cheapestProduct = new Main();
